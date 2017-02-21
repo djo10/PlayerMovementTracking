@@ -13,10 +13,11 @@ def videoParser(videopath, frameslocation):
     success = True
     frames = []
     while success:
-        success,image = vidcap.read()
+
         cv2.imwrite(frameslocation + "/frame%d.jpg" % count, image)     # save frame as JPEG file
         frames.append(frameslocation + "/frame%d.jpg" % count)
         count += 1
+        success, image = vidcap.read()
     return frames
 
 def getFrames(path):
