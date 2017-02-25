@@ -19,10 +19,13 @@ def generateAvgTeam(players):
                 else:
                     t1[ig.avg[0] + i, ig.avg[1] + j] = ig.pic[i, j]
 
-    return t, t1
+    cv2.imwrite("../data/results/team1.png", t)
+    cv2.imwrite("../data/results/team2.png", t1)
+    return [t, t1]
 
 
 def genAvgPlayer(player):
+    print "Player "+str(player.number)+ " Team "+str(player.team)+". Generating heat map..."
     blank_image = np.zeros((595, 920, 3), np.uint8)
     blank_image[:, :] = (255, 255, 255)
     for c in player.coords:
@@ -39,7 +42,10 @@ def genAvgPlayer(player):
                     p[2] = p[2] - 5
                     blank_image[i, j] = p
 
-    return blank_image
+    player.avgPosPic = blank_image
+    path = "../data/results/player" +str(player.number)+ "Team"+str(player.team)+".png"
+    cv2.imwrite(path, blank_image)
+    # return blank_image
 
 def getTeams(players):
     t1=[]
@@ -51,4 +57,4 @@ def getTeams(players):
         else:
             t2.append(p)
 
-    return t1,t2
+    return [t1,t2]

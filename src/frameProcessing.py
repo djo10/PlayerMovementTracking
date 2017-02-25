@@ -4,6 +4,18 @@ from skimage.measure import regionprops
 import numpy as np
 from player import *
 
+class Player:
+    def __init__(self, number, team, pic):
+        self.number = number
+        self.coords = []
+        self.team = team
+        self.pic = pic
+        self.avg = (0. , 0.)
+        self.avgPosPic = None
+
+
+
+
 def frameProcessing(frames, model, batch_size, kmeans):
     count = 0
     players = []

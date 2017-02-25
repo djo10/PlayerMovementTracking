@@ -6,8 +6,24 @@ import matplotlib.pyplot as plt  # za prikaz slika, grafika, itd.
 from mpl_toolkits.mplot3d import Axes3D
 from generateresults import *
 
+
+def getmenustr(teams):
+    s = ""
+    s+= 30 * "-"+ " MENU "+ 30 * "-"
+    s+= "\n    TEAM 1      \n"
+    for i, player in enumerate(teams[0]):
+        s+= str(i+1)+". "+str(player.number)+'\n'
+
+    s+="\n    TEAM 2     \n "
+    for i, player in enumerate(teams[1]):
+        s+=str(i+1)+". "+str(player.number)+'\n'
+
+    s+=67 * "-"
+    return s
+
 video = '../data/videos/tottenham.flv'
 frameslocation = '../data/frames'
+resultlocation = '../data/results'
 
 batch_size = 128
 nb_classes = 10
@@ -36,49 +52,63 @@ if __name__ == "__main__":
 
     calculateAvgPos(players, len(frames))
 
-    tAvgPic, t1AvgPic = generateAvgTeam(players)
+    if (exists(resultlocation)):
+        shutil.rmtree(resultlocation)
+    makedirs(resultlocation)
 
-    team1, team2 = getTeams(players)
+    teamPics = generateAvgTeam(players)
+
+    for p in players:
+        genAvgPlayer(p)
+
+    teams = getTeams(players)
+
+    strmenu = getmenustr(teams)
+
+    loop = True
+
+    while loop:  ## While loop which will keep going until loop = False
+        print strmenu  ## Displays menu
+        choice = raw_input("Enter your choice: 1 or 2 for team or teamnum-playeridx for player: ")
+        choice = choice.split("-")
+        # print choice.split("-")
+        print choice
+
+        if int(choice[0])==0:
+            loop = False
+        elif len(choice) == 1:
+            # str = "Team "+choice[0]+" Average Formation"
+            plt.imshow(teamPics[int(choice[0])-1])
+            plt.show()
+            # cv2.imshow(str, teamPics[int(choice[0])-1])
+            # k = cv2.waitKey(0) & 0xFF
+            # if k == 27:
+            #     cv2.destroyAllWindows()
+        elif len(choice) == 2:
+            pl = teams[int(choice[0])-1][int(choice[1])-1]
+            # str = "Player " + pl.number + " from Team "+ pl.team+" average movement - Heat Map"
+            plt.imshow(pl.avgPosPic)
+            plt.show()
+            # cv2.imshow(str, pl.avgPosPic)
+            # k = cv2.waitKey(0) & 0xFF
+            # if k == 27:
+            #     cv2.destroyAllWindows()
+
+        else:
+            # Any integer inputs other than values 1-5 we print an error message
+            raw_input("Wrong option selection. Enter any key to try again..")
+
+
+
+    # cv2.imshow('OriginalImage', t1AvgPic)
+    # k = cv2.waitKey(0)
+    # if k == 27:
+    #     cv2.destroyAllWindows()
 
 
 
 
-
-    cv2.imshow('OriginalImage', t1AvgPic)
-    k = cv2.waitKey(0)
-    if k == 27:
-        cv2.destroyAllWindows()
-
-
-
-
-
-        #
-        # blank_image = np.zeros((595, 920, 3), np.uint8)
-        # blank_image[:, :] = (255, 255, 255)
-        # for c in players[0].coords:
-        #     # temp = blank_image[c[0]-4:c[0]+4, c[1]-4:c[0]+4]
-        #     # blank_image[c[0]-4:c[0]+4, c[1]-4:c[0]+4] = (255, 255, 255)
-        #     for i in range(c[0]-8, c[0]+8):
-        #         for j in range(c[1]-8, c[1]+8):
-        #             p = blank_image[i,j]
-        #             if p[0]>=5:
-        #                 p[0] = p[0]-5
-        #                 blank_image[i,j]=p
-        #             elif p[1]>=5:
-        #                 p[1] = p[1] - 5
-        #                 blank_image[i, j] = p
-        #             elif p[2]>=5:
-        #                 p[2] = p[2] - 5
-        #                 blank_image[i, j] = p
-
-
-
-
-
-
-
-        # colors = {0: 'red', 1: 'green'}
+    # colors = {0: 'red', 1: 'green'}
     # fig = plt.figure()
     # ax = fig.add_subplot(111, projection='3d')
     # for idx, cluster in enumerate(kmeans.clusters):
@@ -91,123 +121,3 @@ if __name__ == "__main__":
     #
     # plt.show()
     #
-
-
-
-    #
-    #
-    # cv2.imshow('OriginalImage', t)
-    # k = cv2.waitKey(0)
-    # if k == 27:
-    #     cv2.destroyAllWindows()
-    #
-    #
-    # gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    #
-    # ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)  # TOZERO / BINARY
-    #
-    # labeled_img = label(thresh)
-    # regions = regionprops(labeled_img)
-    #
-    # regions_players = []
-    # count=0
-    # xxx=[]
-    # boje = np.array([np.array([0,0,0])])
-    # boje = np.delete(boje, 0, 0)
-    #
-    # numbers=[]
-    # pas = False
-    # for region in regions:
-    #     if pas:
-    #         pas = False
-    #         continue
-    #
-    #     bbox = region.bbox
-    #     h = bbox[2] - bbox[0]  # visina
-    #     w = bbox[3] - bbox[1]  # sirina
-    #
-    #     if h==8 and 2<=float(w)<=6:  # IZDVAJAJU SE REGIONI KOJI PREDSTAVLJAJU IGRACE U OBLIKU KUGLICA SA BROJEM
-    #
-    #         crop = thresh[bbox[0]:bbox[2], bbox[1]:bbox[3]]
-    #
-    #         center = ((bbox[0]+bbox[2])/2 ), ((bbox[1]+bbox[3])/2)
-    #
-    #
-    #         slika = obrada(crop)
-    #
-    #         if 2<=w<=3:
-    #             numero=[1]
-    #         else:
-    #             numero = model.predict_classes(slika, batch_size=batch_size)
-    #
-    #         boja = im[bbox[0]-2][(bbox[1]+bbox[3])/2]
-    #
-    #         if region.label ==len(regions):
-    #             xxx.append(boja.tolist())
-    #             boje = np.append(boje, np.array([boja]), axis=0)
-    #             numbers.append(numero[0])
-    #             slicica1 = im[center[0] - 8:center[0] + 8, center[1] - 8:center[1] + 8]
-    #
-    #             continue
-    #         next = regions[region.label]
-    #
-    #         bbox1 = next.bbox
-    #         hh = bbox1[2] - bbox1[0]  # visina
-    #         ww = bbox1[3] - bbox1[1]  # sirina
-    #         # print bbox1, next.label
-    #
-    #         if hh == 8 and 2 <= float(ww) <= 6 and bbox[0]==bbox1[0] and bbox[2]==bbox1[2] and bbox[3]+1==bbox1[1]:
-    #             crop2 = thresh[bbox1[0]:bbox1[2], bbox1[1]:bbox1[3]]
-    #
-    #             center2 = ((bbox1[0] + bbox1[2]) / 2), ((bbox[1] + bbox1[3]) / 2)
-    #             # print bbox1, hh, ww, center2
-    #
-    #             sl = obrada(crop2)
-    #
-    #             if 2 <= ww <= 3:
-    #                 numero1 = [1]
-    #             else:
-    #                 numero1 = model.predict_classes(sl, batch_size=batch_size)
-    #
-    #             boja2 = im[bbox1[0] - 2][(bbox[1] + bbox1[3]) / 2]
-    #
-    #             xxx.append(boja2.tolist())
-    #             boje = np.append(boje, np.array([boja2]), axis=0)
-    #
-    #             numbers.append(numero[0]*10+numero1[0])
-    #             pas = True
-    #             slicica = im[center2[0]-8:center2[0]+8, center2[1]-8:center2[1]+8]
-    #
-    #         else:
-    #             xxx.append(boja.tolist())
-    #             boje = np.append(boje, np.array([boja]), axis=0)
-    #             numbers.append(numero[0])
-    #             slicica1 = im[center[0] - 8:center[0] + 8, center[1] - 8:center[1] + 8]
-    #
-    #         # print numbers
-    #         regions_players.append(region)
-    #     count+=1
-    #
-    # cv2.imshow('OriginalImage', im)
-    # k = cv2.waitKey(0)
-    # if k == 27:
-    #     cv2.destroyAllWindows()
-    #
-    #
-    # # print len(regions_players)
-    # # print boje
-    # # print len(boje)
-    # # print xxx
-    # bb = copy.deepcopy(xxx)
-    # # lista = bb.tolist()
-    #
-    # kmeans.fit(xxx, normalize=True)
-    #
-    # # for i in xrange(len(boje)):
-    # #     print i,  kmeans.predict(lista[i]), boje[i], lista[i]
-    #
-    # print len(xxx)
-    # print len(numbers)
-    #
-    # # for i in range(len(xxx)):
-    # #     print kmeans.predict(bb[i]), numbers[i], xxx[i]
